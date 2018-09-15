@@ -25,6 +25,7 @@ var clients = [];
 
 setInterval(function()
 {
+	console.log("eyo");
 	// Find matches regularly while server has clients
 	if(clients.length >= 2)
 	{
@@ -39,14 +40,6 @@ function newConnection(newSock)
 	console.log('New connection: ' + newSock.id);
 	console.log("Number of active connetcions: " + Object.keys(clients).length);
 
-	/*
-	newSock.on("data", (data) => {
-		console.log("rcvd data");
-		console.log(data);
-	});
-	*/
-
-	newSock.on("credentials", (data) => onCredentials(newSock, data));
 	newSock.on("request", (data) => onRequest(newSock, data));
 	newSock.on("cancelRequest", () => onCancelRequest(newSock));
 	newSock.on("completeTransit", () => onCompleteTransit(newSock));
@@ -81,18 +74,6 @@ function removeClient(socket)
 	delete clients[socket.id];
 }
 
-function onCredentials(sender, data)
-{
-	console.log("Received credentials packet from client " + sender.id);
-	console.log(data);
-
-	let client = findClient(sender);
-	client.name = data.name;
-	client.studentID = data.studentID;
-
-	echo(sender, data);
-}
-
 function onRequest(sender, data)
 {
 	console.log("Received request packet from client " + sender.id);
@@ -107,7 +88,7 @@ function onRequest(sender, data)
 	client.parkingLot = data.parkingLot;
 	client.state = UserState.REQUESTED;
 
-	echo(sender, data);
+	// echo(sender, data);
 }
 
 function onCancelRequest(sender)
@@ -135,7 +116,7 @@ function onLocation(sender, data)
 	client.longitude = data.longitude;
 	client.latitude = data.latitude;
 
-	echo(sender, data);
+	// echo(sender, data);
 }
 
 function onDisconnect(socket, reason)

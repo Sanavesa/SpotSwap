@@ -3,11 +3,14 @@ const address = "https://parkoo-erau-2018.herokuapp.com/";
 const io = require("socket.io-client");
 const fs = require("fs");
 
+let client = null;
+
 let name = null;
 let studentID = null;
 let longitude = null;
 let latitude = null;
-let client = null;
+let isDriver = null;
+let parkingLot = null;
 
 // Load name/sid from file
 fs.readFile('testData.txt', 'utf8', function(err, contents)
@@ -15,15 +18,19 @@ fs.readFile('testData.txt', 'utf8', function(err, contents)
 	// Split file into name and and student ID
 	var fileContents = contents.split("\n");
 	name = fileContents[0];
-	studentID = fileContents[1];
-	longitude = fileContents[2];
-	latitude = fileContents[3];
+	studentID = parseInt(fileContents[1]);
+	longitude = Number(fileContents[2]);
+	latitude = Number(fileContents[3]);
+	isDriver = (fileContents[4] === 'true');
+	parkingLot = fileContents[5];
 
 	console.log("Loaded:")
 	console.log("\t Name = " + name);
 	console.log("\t Student ID = " + studentID);
-	console.log("\t  Longitude = " + longitude);
+	console.log("\t Longitude = " + longitude);
 	console.log("\t Latitude = " + latitude);
+	console.log("\t Is Driver = " + isDriver);
+	console.log("\t Parking Lot = " + parkingLot);
 
 	main();
 });
@@ -68,17 +75,19 @@ function main()
 
 		if(client.connected)
 		{
-			// sendCredentials(client, "Moe", 123123);
-
 			setTimeout(function() {
-				let i = 24.5;
-				let j = 99.5;
-				sendRequest(client, "Moe", 133133, i, j, true, "Garage B");
+				sendRequest(client, name, studentID, longitude, latitude, isDriver, parkingLot);
 
-				setInterval(function() {
-					i += 1;
-					j -= 1;
-					sendLocation(client, i, j);
+				var interval = setInterval(function() {
+					longitude++;
+					latitude--;
+					sendLocation(client, longitude, latitude);
+
+					if(longitude >= 50)
+					{
+						clearInterval(interval);
+						sendCompleteTransit(client);
+					}
 				}, 5000);
 
 			}, 2000);
@@ -131,26 +140,6 @@ function main()
 	});
 }
 
-// Sends to the server who this client is
-function sendCredentials(sock, name, studentID)
-{
-	// Abort early if socket is not connected
-	if(sock == null || sock.connected == false)
-	{
-		console.log("Failed to send credentials as socket is not connected");
-		return;
-	}
-
-	// Construct a packet from the given parameters
-	let data = {
-		name: name,
-		studentID: studentID,
-	};
-
-
-	sock.emit("credentials", data);
-}
-
 // Sends a request to the server for a parking spot
 function sendRequest(socket, name, studentID, longitude, lattitude, isDriver, parkingLot)
 {
@@ -188,7 +177,7 @@ function cancelRequest(socket)
 }
 
 // Tells the server to complete the transit 
-function completeTransit(socket)
+function sendCompleteTransit(socket)
 {
 	// Abort early if socket is not connected
 	if(socket == null || socket.connected == false)

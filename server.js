@@ -10,7 +10,7 @@ console.log("Server starting to execute.");
 var socket = require('socket.io');
 var io = socket(server);
 
-console.log("Server running on " + server.address());
+console.log("Server running on " + server.address().port);
 
 io.sockets.on('connect', newConnection);
 

@@ -57,7 +57,8 @@ function addClient(socket)
 			latitude: null,
 			isDriver: null,
 			parkingLot: null,
-			state: UserState.IDLE
+			state: UserState.IDLE,
+			matchedSocketID: null
 	};
 
 	console.log("Added client " + socket.id);
@@ -86,6 +87,7 @@ function onRequest(sender, data)
 	client.isDriver = data.isDriver;
 	client.parkingLot = data.parkingLot;
 	client.state = UserState.REQUESTED;
+	client.matchedSocketID = null;
 
 	// echo(sender, data);
 }
@@ -96,6 +98,7 @@ function onCancelRequest(sender)
 
 	let client = findClient(sender);
 	client.state = UserState.IDLE;
+	client.matchedSocketID = null;
 }
 
 function onCompleteTransit(sender)
@@ -103,7 +106,17 @@ function onCompleteTransit(sender)
 	console.log("Received complete transit packet from client " + sender.id);
 
 	let client = findClient(sender);
+	let client2 = findClient(client.matchedSocketID);
+
+	// Tell both that the transit is over
+	client.socket.emit("completeTransit", null);
+	client2.socket.emit("completeTransit", null);
+
 	client.state = UserState.IDLE;
+	client.matchedSocketID = null;
+
+	client2.state = UserState.IDLE;
+	client2.matchedSocketID = null;
 }
 
 function onLocation(sender, data)
@@ -115,6 +128,16 @@ function onLocation(sender, data)
 	client.longitude = data.longitude;
 	client.latitude = data.latitude;
 
+	// Broadcast the location to the matched user
+	if(client.matchedSocketID != null)
+	{
+		let client2 = findClient(client.matchedSocketID);
+		let data = {
+			longitude: client.longitude,
+			latitude: client.latitude
+		};
+		client2.socket.emit("location", data);
+	}
 	// echo(sender, data);
 }
 
@@ -126,7 +149,7 @@ function onDisconnect(socket, reason)
 
 function findMatches()
 {
-	console.log("Finding matches...");
+	// console.log("Finding matches...");
 	let lookingForSpot = [];
 	let lookingForRide = [];
 	// Match users that are not in REQUESTED state
@@ -138,7 +161,7 @@ function findMatches()
 			else
 				lookingForRide.push(key);
 
-			console.log(key +  " =>  " + clients[key].name);
+			// console.log(key +  " =>  " + clients[key].name);
 	});
 
 	// Match a person that is looking for a ride with a person looking for a spot, until no more
@@ -162,6 +185,7 @@ function findMatches()
 		};
 
 		spotClient.socket.emit("matched", data);
+		spotClient.state = UserState.MATCHED;
 
 		data =
 		{
@@ -174,8 +198,9 @@ function findMatches()
 		};
 
 		rideClient.socket.emit("matched", data);
+		rideClient.state = UserState.MATCHED;
 
-		console.log("\tMatched " + spotKey + " with " + rideKey);
+		console.log("\tMatched " + spotClient.name + " with " + rideClient.name);
 	}
 }
 

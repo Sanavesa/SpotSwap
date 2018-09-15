@@ -66,6 +66,31 @@ function main()
 		console.log(data);
 	});
 
+	client.on("matched", function(data) {
+		console.log("I HAVE BEEN MATCHED!");
+		console.log(data);
+
+		var interval = setInterval(function() {
+			longitude++;
+			latitude--;
+			sendLocation(client, longitude, latitude);
+
+			if(longitude >= 50)
+			{
+				clearInterval(interval);
+				sendCompleteTransit(client);
+			}
+		}, 5000);
+	});
+
+	client.on("completeTransit", function() {
+		console.log("Completed transit!");
+	});
+
+	client.on("location", function(data) {
+		console.log("Matched user is at " + data.longitude + " , " + data.latitude);
+	});
+
 	client.on("error", function(err) {
 		console.log("Error occured: " + err);
 	});
@@ -77,19 +102,6 @@ function main()
 		{
 			setTimeout(function() {
 				sendRequest(client, name, studentID, longitude, latitude, isDriver, parkingLot);
-
-				var interval = setInterval(function() {
-					longitude++;
-					latitude--;
-					sendLocation(client, longitude, latitude);
-
-					if(longitude >= 50)
-					{
-						clearInterval(interval);
-						sendCompleteTransit(client);
-					}
-				}, 5000);
-
 			}, 2000);
 		}
 	});

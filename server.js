@@ -50,8 +50,8 @@ function addClient(socket)
 			status: UserStatus.IDLE
 	};
 
-	console.log("Added client");
-	console.log(clients[socket.id]);
+	console.log("Added client " + socket.id);
+	//console.log(clients[socket.id]);
 }
 
 function findClient(socket)

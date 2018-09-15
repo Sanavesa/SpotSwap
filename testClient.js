@@ -44,6 +44,7 @@ function main()
 	}
 	*/
 
+	/*
 	let data = {
 		name: name,
 		sid: studentID,
@@ -51,6 +52,7 @@ function main()
 		lat: latitude
 	};
 	client.emit("data", data);
+	*/
 
 	client.on("echo", function(data) {
 		console.log("ECHO!");
@@ -63,6 +65,13 @@ function main()
 
 	client.on("connect", function() {
 		console.log("Connection status: " + client.connected);
+
+		if(client.connected)
+		{
+			//sendCredentials(client, "Moe", 123123);
+			//sendRequest(client, 24.5, 99.5, true, "Garage B");
+			//sendLocation(client, 25.0, 100.5);
+		}
 	});
 
 	client.on("disconnect", function(reason) {

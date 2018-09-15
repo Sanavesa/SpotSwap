@@ -5,13 +5,12 @@ var server = app.listen(process.env.PORT || port);
 
 app.use(express.static("public"));
 
-console.log("Server running.");
+console.log("Server starting to execute.");
 
 var socket = require('socket.io');
 var io = socket(server);
 
-console.log(socket);
-console.log(socket.address());
+console.log("Server running on " + server.address());
 
 io.sockets.on('connect', newConnection);
 

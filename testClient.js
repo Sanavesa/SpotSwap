@@ -68,12 +68,12 @@ function main()
 
 		if(client.connected)
 		{
-			sendCredentials(client, "Moe", 123123);
+			// sendCredentials(client, "Moe", 123123);
 
 			setTimeout(function() {
 				let i = 24.5;
 				let j = 99.5;
-				sendRequest(client, i, j, true, "Garage B");
+				sendRequest(client, "Moe", 133133, i, j, true, "Garage B");
 
 				setInterval(function() {
 					i += 1;

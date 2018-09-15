@@ -139,11 +139,12 @@ function onDisconnect(socket, reason)
 
 function findMatches()
 {
+	console.log("Finding matches...");
 	// Match users that are not in REQUESTED state
 	Object.keys(clients).forEach(function(key)
 	{
 		if(clients[key].state === UserState.REQUESTED)
-			console.log(key, clients[key]);
+			console.log(key +  " =>  " + clients[key].name);
 	});
 }
 

@@ -4,7 +4,6 @@
   "description": "",
   "main": "server.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
     "start": "node server.js"
   },
   "repository": {
@@ -18,9 +17,9 @@
   },
   "homepage": "https://github.com/Sanavesa/HackFIUServer#readme",
   "engines": {
-	"node": "8.9.4"
+    "node": "8.9.4"
   },
-  "scripts": {
-	"start": "node server.js"
+  "dependencies": {
+    "socket.io": "^2.1.1"
   }
 }

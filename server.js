@@ -28,7 +28,7 @@ function newConnection(newSock)
 	addClient(newSock);
 
 	console.log('New connection: ' + newSock.id);
-	console.log("Number of active connetcions: " + clients.length);
+	console.log("Number of active connetcions: " + Object.keys(clients).length);
 
 	newSock.on("data", (data) => {
 		console.log("rcvd data");
@@ -120,6 +120,7 @@ function findMatches()
 
 function echo(socket)
 {
+	return;
 	let client = findClient(socket);
 	socket.emit("echo", client);
 }

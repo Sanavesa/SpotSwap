@@ -64,14 +64,14 @@ function addClient(socket)
 	console.log("Added client " + socket.id);
 }
 
-function findClient(socket)
+function findClient(socketID)
 {
-	return clients[socket.id];
+	return clients[socketID];
 }
 
-function removeClient(socket)
+function removeClient(socketID)
 {
-	delete clients[socket.id];
+	delete clients[socketID];
 }
 
 function onRequest(sender, data)
@@ -137,6 +137,11 @@ function onLocation(sender, data)
 			latitude: client.latitude
 		};
 		client2.socket.emit("location", data);
+		console.log("sent location to matched bruh");
+	}
+	else
+	{
+		console.log("cant send to matched cuz bruh");
 	}
 	// echo(sender, data);
 }

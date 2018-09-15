@@ -1,4 +1,5 @@
-const address = "https://parkoo-erau-2018.herokuapp.com/";
+// const address = "https://parkoo-erau-2018.herokuapp.com/";
+const address = "127.0.0.1:3000";
 const io = require("socket.io-client");
 const fs = require("fs");
 
@@ -50,6 +51,11 @@ function main()
 		lat: latitude
 	};
 	client.emit("data", data);
+
+	client.on("echo", function(data) {
+		console.log("ECHO!");
+		console.log(data);
+	});
 
 	client.on("error", function(err) {
 		console.log("Error occured: " + err);
@@ -105,8 +111,28 @@ function main()
 	});
 }
 
+// Sends to the server who this client is
+function sendCredentials(sock, name, studentID)
+{
+	// Abort early if socket is not connected
+	if(sock == null || sock.connected == false)
+	{
+		console.log("Failed to send credentials as socket is not connected");
+		return;
+	}
+
+	// Construct a packet from the given parameters
+	let data = {
+		name: name,
+		studentID: studentID,
+	};
+
+
+	sock.emit("credentials", data);
+}
+
 // Sends a request to the server for a parking spot
-function sendRequest(sock, name, studentID, longitude, lattitude, isDriver, parkingLot)
+function sendRequest(sock, longitude, lattitude, isDriver, parkingLot)
 {
 	// Abort early if socket is not connected
 	if(sock == null || sock.connected == false)
@@ -117,8 +143,6 @@ function sendRequest(sock, name, studentID, longitude, lattitude, isDriver, park
 
 	// Construct a packet from the given parameters
 	let data = {
-		name: name,
-		studentID: studentID,
 		longitude: longitude,
 		latitude: latitude,
 		isDriver: isDriver,

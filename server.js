@@ -3,6 +3,13 @@ var express = require("express");
 var app = express();
 var server = app.listen(process.env.PORT || port);
 
+const UserStatus =
+{
+	IDLE: "idle",
+	REQUESTED: "requested",
+	MATCHED: "matched"
+}
+
 app.use(express.static("public"));
 
 console.log("Server starting to execute.");
@@ -14,54 +21,97 @@ console.log("Server running on " + server.address().port);
 
 io.sockets.on('connect', newConnection);
 
-var socketList = [];
+var clients = [];
 
 function newConnection(newSock)
 {
-	socketList.push(newSock);
+	addClient(newSock);
 
-	console.log('New connection: ' + newSock.id);
-	console.log("Number of active connetcions: " + socketList.length);
+	console.log('New connection: ' + clients.id);
+	console.log("Number of active connetcions: " + clients.length);
 
-	newSock.on("request", (data) =>
-	{	
-		onRequest(newSock, data);
-	});
+	newSock.on("credentials", (data) => onCredentials(newSock, data));
+	newSock.on("request", (data) => onRequest(newSock, data));
+	newSock.on("location", (data) => onLocation(newSock, data));
+	newSock.on('disconnect', (reason) => onDisconnect(newSock, reason));
+}
 
-	newSock.on("location", (data) =>
+function addClient(socket)
+{
+	clients[socket.id] = 
 	{
-		onLocation(newSock, data);
-	});
+			socket: socket,
+			name: null,
+			studentID: null,
+			longitude: null,
+			latitude: null,
+			isDriver: null,
+			parkingLot: null,
+			status: UserStatus.IDLE
+	};
+}
 
-	newSock.on('disconnect', (reason) =>
-	{
-		console.log('Connection ' + newSock.id + ' disconnected because ' + reason);
-		let index = socketList.indexOf(newSock);
-		if (index !== -1)
-			socketList.splice(index, 1);
-	});
+function findClient(socket)
+{
+	return clients[socket.id];
+}
+
+function removeClient(socket)
+{
+	delete clients[socket.id];
+}
+
+function onCredentials(sender, data)
+{
+	console.log("Received credentials packet from client " + sender.id);
+	console.log(data);
+
+	let client = findClient(sender);
+	client.name = data.name;
+	client.studentID = data.studentID;
+
+	echo(sender);
 }
 
 function onRequest(sender, data)
 {
-	console.log("Received request packet from client " + newSock.id);
+	console.log("Received request packet from client " + sender.id);
 	console.log(data);
+
+	let client = findClient(sender);
+	client.longitude = data.longitude;
+	client.latitude = data.latitude;
+	client.isDriver = data.isDriver;
+	client.parkingLot = data.parkingLot;
+
+	echo(sender);
 }
 
 function onLocation(sender, data)
 {
-	console.log("Received location packet from client " + newSock.id);
+	console.log("Received location packet from client " + sender.id);
 	console.log(data);
+
+	let client = findClient(sender);
+	client.longitude = data.longitude;
+	client.latitude = data.latitude;
+
+	echo(sender);
 }
 
-var requests = [];
-
-function addToRequest(sock)
+function onDisconnect(socket, reason)
 {
-
+	console.log('Connection ' + socket.id + ' disconnected because ' + reason);
+	removeClient(socket);
 }
 
 function findMatches()
 {
 
+}
+
+function echo(socket)
+{
+	let client = findClient(socket);
+	socket.emit("echo", client);
 }

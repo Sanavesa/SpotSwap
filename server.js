@@ -10,6 +10,9 @@ console.log("Server running.");
 var socket = require('socket.io');
 var io = socket(server);
 
+console.log(socket);
+console.log(socket.address());
+
 io.sockets.on('connect', newConnection);
 
 var socketList = [];

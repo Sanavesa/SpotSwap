@@ -44,7 +44,7 @@ function main()
 	}
 	*/
 
-	
+	/*
 	let data = {
 		name: name,
 		sid: studentID,
@@ -52,7 +52,7 @@ function main()
 		lat: latitude
 	};
 	client.emit("data", data);
-	
+	*/
 
 	client.on("echo", function(data) {
 		console.log("ECHO!");

@@ -27,7 +27,7 @@ function newConnection(newSock)
 {
 	addClient(newSock);
 
-	console.log('New connection: ' + clients.id);
+	console.log('New connection: ' + newSock.id);
 	console.log("Number of active connetcions: " + clients.length);
 
 	newSock.on("credentials", (data) => onCredentials(newSock, data));
@@ -49,6 +49,9 @@ function addClient(socket)
 			parkingLot: null,
 			status: UserStatus.IDLE
 	};
+
+	console.log("Added client");
+	console.log(clients[socket.id]);
 }
 
 function findClient(socket)

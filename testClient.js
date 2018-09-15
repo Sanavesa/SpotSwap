@@ -1,5 +1,5 @@
-// const address = "https://parkoo-erau-2018.herokuapp.com/";
-const address = "127.0.0.1:3000";
+const address = "https://parkoo-erau-2018.herokuapp.com/";
+// const address = "127.0.0.1:3000";
 const io = require("socket.io-client");
 const fs = require("fs");
 

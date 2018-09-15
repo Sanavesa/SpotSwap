@@ -80,7 +80,7 @@ function onCredentials(sender, data)
 	client.name = data.name;
 	client.studentID = data.studentID;
 
-	echo(sender);
+	echo(sender, data);
 }
 
 function onRequest(sender, data)
@@ -94,7 +94,7 @@ function onRequest(sender, data)
 	client.isDriver = data.isDriver;
 	client.parkingLot = data.parkingLot;
 
-	echo(sender);
+	echo(sender, data);
 }
 
 function onLocation(sender, data)
@@ -106,7 +106,7 @@ function onLocation(sender, data)
 	client.longitude = data.longitude;
 	client.latitude = data.latitude;
 
-	echo(sender);
+	echo(sender, data);
 }
 
 function onDisconnect(socket, reason)
@@ -120,8 +120,7 @@ function findMatches()
 
 }
 
-function echo(socket)
+function echo(socket, data)
 {
-	let client = findClient(socket);
-	socket.emit("echo", client);
+	socket.emit("echo", data);
 }

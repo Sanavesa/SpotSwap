@@ -196,7 +196,7 @@ function findMatches()
 
 		spotClient.socket.emit("matched", data);
 		spotClient.state = UserState.MATCHED;
-		spotClient.matchedSocketID = rideClient;
+		spotClient.matchedSocketID = rideKey;
 
 		data =
 		{
@@ -210,7 +210,7 @@ function findMatches()
 
 		rideClient.socket.emit("matched", data);
 		rideClient.state = UserState.MATCHED;
-		rideClient.matchedSocketID = spotClient;
+		rideClient.matchedSocketID = spotKey;
 
 		console.log("\tMatched " + spotClient.name + " with " + rideClient.name);
 	}

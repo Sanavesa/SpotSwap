@@ -19,12 +19,13 @@ var socketList = [];
 function newConnection(newSock)
 {
 	console.log('New connection: ' + newSock.id);
+	console.log("Number of active connetcions: " + socketList.length);
 
 	socketList.push(newSock);
 
 	newSock.on('data', (data) =>
 	{
-		console.log('received data!');
+		console.log('Received data from client!');
 		console.log(data);
 	});
 

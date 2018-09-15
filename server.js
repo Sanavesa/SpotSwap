@@ -64,7 +64,12 @@ function addClient(socket)
 	console.log("Added client " + socket.id);
 }
 
-function findClient(socketID)
+function findClientBySocket(socket)
+{
+	return clients[socket.id];
+}
+
+function findClientByID(socketID)
 {
 	return clients[socketID];
 }
@@ -79,7 +84,7 @@ function onRequest(sender, data)
 	console.log("Received request packet from client " + sender.id);
 	console.log(data);
 
-	let client = findClient(sender);
+	let client = findClientBySocket(sender);
 	client.name = data.name;
 	client.studentID = data.studentID;
 	client.longitude = data.longitude;
@@ -96,7 +101,7 @@ function onCancelRequest(sender)
 {
 	console.log("Received cancel request packet from client " + sender.id);
 
-	let client = findClient(sender);
+	let client = findClientBySocket(sender);
 	client.state = UserState.IDLE;
 	client.matchedSocketID = null;
 }
@@ -105,8 +110,8 @@ function onCompleteTransit(sender)
 {
 	console.log("Received complete transit packet from client " + sender.id);
 
-	let client = findClient(sender);
-	let client2 = findClient(client.matchedSocketID);
+	let client = findClientBySocket(sender);
+	let client2 = findClientByID(client.matchedSocketID);
 
 	// Tell both that the transit is over
 	client.socket.emit("completeTransit", null);
@@ -124,14 +129,14 @@ function onLocation(sender, data)
 	console.log("Received location packet from client " + sender.id);
 	console.log(data);
 
-	let client = findClient(sender);
+	let client = findClientBySocket(sender);
 	client.longitude = data.longitude;
 	client.latitude = data.latitude;
 
 	// Broadcast the location to the matched user
 	if(client.matchedSocketID != null)
 	{
-		let client2 = findClient(client.matchedSocketID);
+		let client2 = findClientByID(client.matchedSocketID);
 		let data = {
 			longitude: client.longitude,
 			latitude: client.latitude

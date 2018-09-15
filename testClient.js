@@ -21,7 +21,7 @@ fs.readFile('testData.txt', 'utf8', function(err, contents)
 	studentID = parseInt(fileContents[1]);
 	longitude = Number(fileContents[2]);
 	latitude = Number(fileContents[3]);
-	isDriver = (fileContents[4] === 'true');
+	isDriver = (parseInt(fileContents[4]) === 1);
 	parkingLot = fileContents[5];
 
 	console.log("Loaded:")

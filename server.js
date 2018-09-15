@@ -25,13 +25,12 @@ var clients = [];
 
 setInterval(function()
 {
-	console.log("eyo");
 	// Find matches regularly while server has clients
-	if(clients.length >= 2)
+	if(Object.keys(clients).length >= 2)
 	{
 		findMatches();
 	}
-}, 500);
+}, 1000);
 
 function newConnection(newSock)
 {

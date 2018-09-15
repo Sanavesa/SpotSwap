@@ -23,6 +23,15 @@ io.sockets.on('connect', newConnection);
 
 var clients = [];
 
+setInterval(function()
+{
+	// Find matches regularly while server has clients
+	if(clients.length >= 2)
+	{
+		findMatches();
+	}
+}, 500);
+
 function newConnection(newSock)
 {
 	addClient(newSock);
@@ -99,8 +108,6 @@ function onRequest(sender, data)
 	client.state = UserState.REQUESTED;
 
 	echo(sender, data);
-
-	findMatches();
 }
 
 function onCancelRequest(sender)
@@ -140,12 +147,56 @@ function onDisconnect(socket, reason)
 function findMatches()
 {
 	console.log("Finding matches...");
+	let lookingForSpot = [];
+	let lookingForRide = [];
 	// Match users that are not in REQUESTED state
 	Object.keys(clients).forEach(function(key)
 	{
 		if(clients[key].state === UserState.REQUESTED)
+			if(clients[key].isDriver)
+				lookingForSpot.push(key);
+			else
+				lookingForRide.push(key);
+
 			console.log(key +  " =>  " + clients[key].name);
 	});
+
+	// Match a person that is looking for a ride with a person looking for a spot, until no more
+	while(lookingForSpot.length > 0 && lookingForRide.length > 0)
+	{
+		let spotKey = lookingForSpot.pop();
+		let rideKey = lookingForRide.pop();
+
+		let spotClient = clients[spotKey];
+		let rideClient = clients[rideKey];
+
+		// Tell each they have been matched
+		let data =
+		{
+			name: rideClient.name,
+			studentID: rideClient.studentID,
+			longitude: rideClient.longitude,
+			latitude: rideClient.latitude,
+			isDriver: rideClient.isDriver,
+			parkingLot: rideClient.parkingLot,
+		};
+
+		spotClient.socket.emit("matched", data);
+
+		data =
+		{
+			name: spotClient.name,
+			studentID: spotClient.studentID,
+			longitude: spotClient.longitude,
+			latitude: spotClient.latitude,
+			isDriver: spotClient.isDriver,
+			parkingLot: spotClient.parkingLot,
+		};
+
+		rideClient.socket.emit("matched", data);
+
+		console.log("\tMatched " + spotKey + " with " + rideKey);
+	}
 }
 
 function echo(socket, data)

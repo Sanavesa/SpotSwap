@@ -79,7 +79,7 @@ function main()
 					i += 1;
 					j -= 1;
 					sendLocation(client, i, j);
-				}, 1000);
+				}, 5000);
 
 			}, 2000);
 		}
@@ -174,6 +174,7 @@ function sendRequest(socket, name, studentID, longitude, lattitude, isDriver, pa
 	socket.emit("request", data);
 }
 
+// Tells server to cancel the request of finding a match
 function cancelRequest(socket)
 {
 	// Abort early if socket is not connected
@@ -186,6 +187,7 @@ function cancelRequest(socket)
 	socket.emit("cancelRequest", null);
 }
 
+// Tells the server to complete the transit 
 function completeTransit(socket)
 {
 	// Abort early if socket is not connected

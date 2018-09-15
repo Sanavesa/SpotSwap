@@ -152,10 +152,10 @@ function sendCredentials(sock, name, studentID)
 }
 
 // Sends a request to the server for a parking spot
-function sendRequest(sock, longitude, lattitude, isDriver, parkingLot)
+function sendRequest(socket, name, studentID, longitude, lattitude, isDriver, parkingLot)
 {
 	// Abort early if socket is not connected
-	if(sock == null || sock.connected == false)
+	if(socket == null || socket.connected == false)
 	{
 		console.log("Failed to send request as socket is not connected");
 		return;
@@ -163,21 +163,46 @@ function sendRequest(sock, longitude, lattitude, isDriver, parkingLot)
 
 	// Construct a packet from the given parameters
 	let data = {
+		name: name,
+		studentID: studentID,
 		longitude: longitude,
 		latitude: latitude,
 		isDriver: isDriver,
 		parkingLot: parkingLot
 	};
 
+	socket.emit("request", data);
+}
 
-	sock.emit("request", data);
+function cancelRequest(socket)
+{
+	// Abort early if socket is not connected
+	if(socket == null || socket.connected == false)
+	{
+		console.log("Failed to send cancel request as socket is not connected");
+		return;
+	}
+
+	socket.emit("cancelRequest", null);
+}
+
+function completeTransit(socket)
+{
+	// Abort early if socket is not connected
+	if(socket == null || socket.connected == false)
+	{
+		console.log("Failed to send complete transit as socket is not connected");
+		return;
+	}
+
+	socket.emit("completeTransit", null);
 }
 
 // Sends the client's location to the server
-function sendLocation(sock, longitude, latitude)
+function sendLocation(socket, longitude, latitude)
 {
 	// Abort early if socket is not connected
-	if(sock == null || sock.connected == false)
+	if(socket == null || socket.connected == false)
 	{
 		console.log("Failed to send location as socket is not connected");
 		return;
@@ -189,6 +214,5 @@ function sendLocation(sock, longitude, latitude)
 		latitude: latitude
 	};
 
-
-	sock.emit("location", data);
+	socket.emit("location", data);
 }

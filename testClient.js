@@ -104,3 +104,47 @@ function main()
 		console.log("Pong packet received from server: latency is " + latency + "ms");
 	});
 }
+
+// Sends a request to the server for a parking spot
+function sendRequest(sock, name, studentID, longitude, lattitude, isDriver, parkingLot)
+{
+	// Abort early if socket is not connected
+	if(sock == null || sock.connected == false)
+	{
+		console.log("Failed to send request as socket is not connected");
+		return;
+	}
+
+	// Construct a packet from the given parameters
+	let data = {
+		name: name,
+		studentID: studentID,
+		longitude: longitude,
+		latitude: latitude,
+		isDriver: isDriver,
+		parkingLot: parkingLot
+	};
+
+
+	sock.emit("request", data);
+}
+
+// Sends the client's location to the server
+function sendLocation(sock, longitude, latitude)
+{
+	// Abort early if socket is not connected
+	if(sock == null || sock.connected == false)
+	{
+		console.log("Failed to send location as socket is not connected");
+		return;
+	}
+
+	// Construct a packet from the given parameters
+	let data = {
+		longitude: longitude,
+		latitude: latitude
+	};
+
+
+	sock.emit("location", data);
+}

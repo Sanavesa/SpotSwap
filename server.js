@@ -18,15 +18,19 @@ var socketList = [];
 
 function newConnection(newSock)
 {
+	socketList.push(newSock);
+
 	console.log('New connection: ' + newSock.id);
 	console.log("Number of active connetcions: " + socketList.length);
 
-	socketList.push(newSock);
+	newSock.on("request", (data) =>
+	{	
+		onRequest(newSock, data);
+	});
 
-	newSock.on('data', (data) =>
+	newSock.on("location", (data) =>
 	{
-		console.log('Received data from client!');
-		console.log(data);
+		onLocation(newSock, data);
 	});
 
 	newSock.on('disconnect', (reason) =>
@@ -36,4 +40,28 @@ function newConnection(newSock)
 		if (index !== -1)
 			socketList.splice(index, 1);
 	});
+}
+
+function onRequest(sender, data)
+{
+	console.log("Received request packet from client " + newSock.id);
+	console.log(data);
+}
+
+function onLocation(sender, data)
+{
+	console.log("Received location packet from client " + newSock.id);
+	console.log(data);
+}
+
+var requests = [];
+
+function addToRequest(sock)
+{
+
+}
+
+function findMatches()
+{
+
 }

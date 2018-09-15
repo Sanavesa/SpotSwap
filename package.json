@@ -1,0 +1,26 @@
+{
+  "name": "hackfiuserver",
+  "version": "1.0.0",
+  "description": "",
+  "main": "server.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node server.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Sanavesa/HackFIUServer.git"
+  },
+  "author": "Alali+Alosaimi",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Sanavesa/HackFIUServer/issues"
+  },
+  "homepage": "https://github.com/Sanavesa/HackFIUServer#readme",
+  "engines": {
+	"node": "8.9.4"
+  },
+  "scripts": {
+	"start": "node server.js"
+  }
+}

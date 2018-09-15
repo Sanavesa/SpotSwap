@@ -30,6 +30,11 @@ function newConnection(newSock)
 	console.log('New connection: ' + newSock.id);
 	console.log("Number of active connetcions: " + clients.length);
 
+	newSock.on("data", (data) => {
+		console.log("rcvd data");
+		console.log(data);
+	});
+
 	newSock.on("credentials", (data) => onCredentials(newSock, data));
 	newSock.on("request", (data) => onRequest(newSock, data));
 	newSock.on("location", (data) => onLocation(newSock, data));

@@ -44,7 +44,7 @@ function main()
 	}
 	*/
 
-	/*
+	
 	let data = {
 		name: name,
 		sid: studentID,
@@ -52,7 +52,7 @@ function main()
 		lat: latitude
 	};
 	client.emit("data", data);
-	*/
+	
 
 	client.on("echo", function(data) {
 		console.log("ECHO!");
@@ -68,9 +68,20 @@ function main()
 
 		if(client.connected)
 		{
-			//sendCredentials(client, "Moe", 123123);
-			//sendRequest(client, 24.5, 99.5, true, "Garage B");
-			//sendLocation(client, 25.0, 100.5);
+			sendCredentials(client, "Moe", 123123);
+
+			setTimeout(function() {
+				let i = 24.5;
+				let j = 99.5;
+				sendRequest(client, i, j, true, "Garage B");
+
+				setInterval(function() {
+					i += 1;
+					j -= 1;
+					sendLocation(client, i, j);
+				}, 1000);
+
+			}, 2000);
 		}
 	});
 

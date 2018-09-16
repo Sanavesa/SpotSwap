@@ -63,7 +63,7 @@ function addClient(socket)
 	};
 
 	console.log("[SERVER] New client connection with ID = " + socket.id);
-	console.log("[SERVER] There are " Object.keys(clients).length + " active connections");
+	console.log("[SERVER] There are " + Object.keys(clients).length + " active connections");
 }
 
 function findClientBySocket(socket)

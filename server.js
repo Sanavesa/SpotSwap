@@ -17,9 +17,6 @@ console.log("Server starting to execute.");
 var socket = require('socket.io');
 var io = socket(server);
 
-io.set("heartbeat timeout", 10);
-io.set("hearbeat interval", 4);
-
 console.log("Server running on " + server.address().port);
 
 io.sockets.on('connect', newConnection);

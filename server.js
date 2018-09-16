@@ -92,7 +92,7 @@ function removeClient(socket)
 	delete clients[socket.id];
 
 	console.log("[SERVER] Removed client connection with ID = " + socket.id);
-	console.log("[SERVER] There are " Object.keys(clients).length + " active connections");
+	console.log("[SERVER] There are " + Object.keys(clients).length + " active connections");
 }
 
 function onRequest(sender, data)

@@ -36,9 +36,6 @@ function newConnection(newSock)
 {
 	addClient(newSock);
 
-	console.log('New connection: ' + newSock.id);
-	console.log("Number of active connetcions: " + Object.keys(clients).length);
-
 	newSock.on("request", (data) => onRequest(newSock, data));
 	newSock.on("cancelRequest", () => onCancelRequest(newSock));
 	newSock.on("completeTransit", () => onCompleteTransit(newSock));
@@ -66,6 +63,8 @@ function addClient(socket)
 	};
 
 	console.log("Added client " + socket.id);
+
+	console.log("Number of active connections: " + Object.keys(clients).length);
 }
 
 function findClientBySocket(socket)
@@ -81,6 +80,8 @@ function findClientByID(socketID)
 function removeClient(socket)
 {
 	delete clients[socket.id];
+
+	console.log("Number of active connections: " + Object.keys(clients).length);
 }
 
 function onRequest(sender, data)

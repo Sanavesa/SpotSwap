@@ -12,12 +12,12 @@ const UserState =
 
 app.use(express.static("public"));
 
-console.log("Server starting to execute.");
+console.log("[SERVER] Starting to execute...");
 
 var socket = require('socket.io');
 var io = socket(server);
 
-console.log("Server running on " + server.address().port);
+console.log("[SERVER] Running on " + server.address().port);
 
 io.sockets.on('connect', newConnection);
 
@@ -62,9 +62,8 @@ function addClient(socket)
 			matchedSocketID: null
 	};
 
-	console.log("Added client " + socket.id);
-
-	console.log("Number of active connections: " + Object.keys(clients).length);
+	console.log("[SERVER] New client connection with ID = " + socket.id);
+	console.log("[SERVER] There are " Object.keys(clients).length + " active connections");
 }
 
 function findClientBySocket(socket)
@@ -79,15 +78,26 @@ function findClientByID(socketID)
 
 function removeClient(socket)
 {
+	// Check if was matched,
+	if(clients[socket.id].state == UserState.MATCHED)
+	{
+		// Tell the matched person, that this person disconnected
+
+		let otherClient = findClientByID(clients[socket.id].matchedSocketID);
+
+		otherClient.socket.emit("terminateMatch", null);
+		otherClient.state = UserState.IDLE;
+		otherClient.matchedSocketID = null;
+	}
 	delete clients[socket.id];
 
-	console.log("Number of active connections: " + Object.keys(clients).length);
+	console.log("[SERVER] Removed client connection with ID = " + socket.id);
+	console.log("[SERVER] There are " Object.keys(clients).length + " active connections");
 }
 
 function onRequest(sender, data)
 {
-	console.log("Received request packet from client " + sender.id);
-	console.log(data);
+	console.log("[SERVER] Received REQUEST packet from client connection with ID = " + sender.id);
 
 	let client = findClientBySocket(sender);
 	client.name = data.name;
@@ -98,13 +108,11 @@ function onRequest(sender, data)
 	client.parkingLot = data.parkingLot;
 	client.state = UserState.REQUESTED;
 	client.matchedSocketID = null;
-
-	// echo(sender, data);
 }
 
 function onCancelRequest(sender)
 {
-	console.log("Received cancel request packet from client " + sender.id);
+	console.log("[SERVER] Received CANCEL_REQUEST packet from client connection with ID = " + sender.id);
 
 	let client = findClientBySocket(sender);
 	client.state = UserState.IDLE;
@@ -113,7 +121,7 @@ function onCancelRequest(sender)
 
 function onCompleteTransit(sender)
 {
-	console.log("Received complete transit packet from client " + sender.id);
+	console.log("[SERVER] Received COMPLETE_TRANSIT packet from client connection with ID = " + sender.id);
 
 	let client = findClientBySocket(sender);
 	let client2 = findClientByID(client.matchedSocketID);
@@ -131,8 +139,7 @@ function onCompleteTransit(sender)
 
 function onLocation(sender, data)
 {
-	console.log("Received location packet from client " + sender.id);
-	console.log(data);
+	console.log("[SERVER] Received LOCATION packet from client connection with ID = " + sender.id);
 
 	let client = findClientBySocket(sender);
 	client.longitude = data.longitude;
@@ -147,14 +154,12 @@ function onLocation(sender, data)
 			latitude: client.latitude
 		};
 		client2.socket.emit("location", data);
-		// console.log("sent location to matched bruh");
 	}
-	// echo(sender, data);
 }
 
 function onDisconnect(socket, reason)
 {
-	console.log('Connection ' + socket.id + ' disconnected because ' + reason);
+	// console.log('Connection ' + socket.id + ' disconnected because ' + reason);
 	removeClient(socket);
 }
 
@@ -213,11 +218,6 @@ function findMatches()
 		rideClient.state = UserState.MATCHED;
 		rideClient.matchedSocketID = spotKey;
 
-		console.log("\tMatched " + spotClient.name + " with " + rideClient.name);
+		console.log("[SERVER] Matched " + spotClient.name + " and " + rideClient.name + " for " + rideClient.parkingLot);
 	}
-}
-
-function echo(socket, data)
-{
-	socket.emit("echo", data);
 }

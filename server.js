@@ -78,9 +78,9 @@ function findClientByID(socketID)
 	return clients[socketID];
 }
 
-function removeClient(socketID)
+function removeClient(socket)
 {
-	delete clients[socketID];
+	delete clients[socket.id];
 }
 
 function onRequest(sender, data)

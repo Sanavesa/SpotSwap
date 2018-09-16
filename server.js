@@ -17,6 +17,9 @@ console.log("Server starting to execute.");
 var socket = require('socket.io');
 var io = socket(server);
 
+io.set("heartbeat timeout", 10);
+io.set("hearbeat interval", 4);
+
 console.log("Server running on " + server.address().port);
 
 io.sockets.on('connect', newConnection);
@@ -43,7 +46,11 @@ function newConnection(newSock)
 	newSock.on("cancelRequest", () => onCancelRequest(newSock));
 	newSock.on("completeTransit", () => onCompleteTransit(newSock));
 	newSock.on("location", (data) => onLocation(newSock, data));
-	newSock.on('disconnect', (reason) => onDisconnect(newSock, reason));
+	newSock.once("disconnect", (reason) => onDisconnect(newSock, reason));
+
+	newSock.on("connection", () => {
+		newSock.on("disconnect", () => onDisconnect(newSock, "idk!"));
+	});
 }
 
 function addClient(socket)
@@ -142,11 +149,7 @@ function onLocation(sender, data)
 			latitude: client.latitude
 		};
 		client2.socket.emit("location", data);
-		console.log("sent location to matched bruh");
-	}
-	else
-	{
-		console.log("cant send to matched cuz bruh");
+		// console.log("sent location to matched bruh");
 	}
 	// echo(sender, data);
 }
@@ -191,7 +194,7 @@ function findMatches()
 			longitude: rideClient.longitude,
 			latitude: rideClient.latitude,
 			isDriver: rideClient.isDriver,
-			parkingLot: rideClient.parkingLot,
+			parkingLot: rideClient.parkingLot
 		};
 
 		spotClient.socket.emit("matched", data);
@@ -205,7 +208,7 @@ function findMatches()
 			longitude: spotClient.longitude,
 			latitude: spotClient.latitude,
 			isDriver: spotClient.isDriver,
-			parkingLot: spotClient.parkingLot,
+			parkingLot: spotClient.parkingLot
 		};
 
 		rideClient.socket.emit("matched", data);

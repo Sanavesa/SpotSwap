@@ -40,6 +40,7 @@ function main()
 {
 	console.log("Trying to connect to " + address + "...");
 	client = io.connect(address);
+	var interval = null;
 
 	/*
 	client.on("welcome", onWelcome);
@@ -70,7 +71,7 @@ function main()
 		console.log("I HAVE BEEN MATCHED!");
 		console.log(data);
 
-		var interval = setInterval(function() {
+		interval = setInterval(function() {
 			longitude++;
 			latitude--;
 			sendLocation(client, longitude, latitude);
@@ -85,6 +86,10 @@ function main()
 
 	client.on("completeTransit", function() {
 		console.log("Completed transit!");
+		if(interval != null)
+		{
+			clearInterval(interval);
+		}
 	});
 
 	client.on("location", function(data) {
